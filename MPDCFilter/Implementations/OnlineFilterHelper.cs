@@ -2,34 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using MPDCFilter.Abstractions;
 using MPDCFilter.Extensions;
 
 namespace MPDCFilter.Implementations
 {
-    public class FilterHelper:IOfflineFilterHelper
+    public class OnlineFilterHelper : IOnlineFilterHelper
     {
-        public IEnumerable<IFilterGroup> Filters {
-            get { return filters; }
-            set {
-                filters = value;
-                selectedValues = new List<bool>();
-                foreach (var item in filters)
-                {
-                    foreach (var innerItem in item.Filters)
-                    {
-                        selectedValues.Add(innerItem.IsSelected);
-                    }
-                }
-            }
-        }
-
-        private IEnumerable<IFilterGroup> filters;
-
+        public Task<IEnumerable<IFilterable>> GetOnlineDataAsync { get; set; }
+        public bool IsFiltered { get; set; }
+        public IEnumerable<IFilterGroup> Filters { get; set; }
         public IEnumerable<IFilterable> Filterables { get; set; }
 
         private List<bool> selectedValues { get; set; }
-        public bool IsFiltered { get; set; }
 
         public void ApplyFilters()
         {
@@ -43,24 +29,18 @@ namespace MPDCFilter.Implementations
             }
         }
 
-        public void UndoFilters()
-        {
-            int i = 0;
-            foreach (var item in Filters)
-            {
-                foreach (var filter in item.Filters)
-                {
-                    filter.IsSelected = selectedValues[i++];
-                }
-            }
-        }
-
         public int GetCountOfFiltered()
         {
             var filteredData = Filterables.GetFilteredList(this);
             if (filteredData == null)
                 return 0;
             return filteredData.Count;
+        }
+
+        public async Task<List<IFilterable>> GetFilteredListAsync()
+        {
+            Filterables = await GetOnlineDataAsync;
+            return Filterables.GetFilteredList(this);
         }
 
         public void ResetFilters()
@@ -78,9 +58,21 @@ namespace MPDCFilter.Implementations
             }
         }
 
-        public List<IFilterable> GetFilteredList()
+        public void UndoFilters()
         {
-            return Filterables.GetFilteredList(this);
+            int i = 0;
+            foreach (var item in Filters)
+            {
+                foreach (var filter in item.Filters)
+                {
+                    filter.IsSelected = selectedValues[i++];
+                }
+            }
+        }
+
+        Task<List<IFilterable>> IOnlineFilterHelper.GetFilteredList()
+        {
+            throw new NotImplementedException();
         }
     }
 }

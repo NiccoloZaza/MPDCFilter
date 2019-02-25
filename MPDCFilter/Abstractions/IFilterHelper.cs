@@ -6,13 +6,9 @@ namespace MPDCFilter.Abstractions
 {
     public interface IFilterHelper
     {
-        bool IsFiltered { get; set; }
-
-        IEnumerable<IFilterGroup> Filters { get; set; }
-
-        IEnumerable<IFilterable> Filterables { get; set; }
-
         int GetCountOfFiltered();
+
+        bool IsFiltered { get; set; }
 
         void ResetFilters();
 
@@ -20,6 +16,8 @@ namespace MPDCFilter.Abstractions
 
         void ApplyFilters();
 
-        List<IFilterable> GetFilteredList();
+        IEnumerable<IFilterGroup> Filters { get; set; }
+
+        IEnumerable<IFilterable> Filterables { get; set; }
     }
 }

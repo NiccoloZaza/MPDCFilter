@@ -11,11 +11,11 @@ namespace MPDCFilter
     {
         private static MPDCFilter _instance = null;
 
-        private Dictionary<object, IFilterHelper> FilterHelpers { get; set; }
+        private Dictionary<object, IOfflineFilterHelper> FilterHelpers { get; set; }
 
         private MPDCFilter()
         {
-            FilterHelpers = new Dictionary<object, IFilterHelper>();
+            FilterHelpers = new Dictionary<object, IOfflineFilterHelper>();
         }
 
         public static MPDCFilter Instance 
@@ -28,9 +28,9 @@ namespace MPDCFilter
             }
         }
 
-        public IFilterHelper GetFilterHelper(object Key)
+        public IOfflineFilterHelper GetFilterHelper(object Key)
         {
-            if (FilterHelpers.TryGetValue(Key, out IFilterHelper value))
+            if (FilterHelpers.TryGetValue(Key, out IOfflineFilterHelper value))
             {
                 return value;
             }
